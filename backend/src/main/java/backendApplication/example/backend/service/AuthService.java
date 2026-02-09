@@ -37,10 +37,13 @@ public class AuthService {
         return userRepository.save(u);
     }
 
-    public String authenticate(LoginRequest req) {
+    public backendApplication.example.backend.dto.AuthResponse authenticate(LoginRequest req) {
         User user = userRepository.findByUsername(req.getUsername()).orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
         if (!passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) throw new IllegalArgumentException("Invalid credentials");
-        return tokenProvider.createToken(user.getUsername());
+        String token = tokenProvider.createToken(user.getUsername());
+        backendApplication.example.backend.dto.AuthResponse resp = new backendApplication.example.backend.dto.AuthResponse(token, user.getUsername(), user.getEmail(), user.getFullName());
+        resp.setMe(true);
+        return resp;
     }
 
     public void invalidateToken(String token) {
