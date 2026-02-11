@@ -146,15 +146,17 @@ function App() {
   return (
     <>
       <div className="card" style={{ maxWidth: 520, margin: '0 auto' }}>
-        <AuthNav
-          canOpenDashboard={Boolean(authToken)}
-          canOpenProfile={Boolean(authToken)}
-          disabled={isSubmitting}
-          onSelect={(nextView) => {
-            clearStatus()
-            setView(nextView)
-          }}
-        />
+        {view === 'dashboard' && (
+          <AuthNav
+            canOpenDashboard={Boolean(authToken)}
+            canOpenProfile={Boolean(authToken)}
+            disabled={isSubmitting}
+            onSelect={(nextView) => {
+              clearStatus()
+              setView(nextView)
+            }}
+          />
+        )}
 
         <StatusBanner status={status} />
 
@@ -164,6 +166,10 @@ function App() {
             disabled={isSubmitting}
             onChange={(patch) => setLoginForm((prev) => ({ ...prev, ...patch }))}
             onSubmit={handleLogin}
+            onSwitch={() => {
+              clearStatus()
+              setView('register')
+            }}
           />
         )}
 
@@ -173,6 +179,10 @@ function App() {
             disabled={isSubmitting}
             onChange={(patch) => setRegisterForm((prev) => ({ ...prev, ...patch }))}
             onSubmit={handleRegister}
+            onSwitch={() => {
+              clearStatus()
+              setView('login')
+            }}
           />
         )}
 
@@ -194,7 +204,8 @@ function App() {
 
         {view === 'profile' && (
           <ViewProfile
-            fullName={profile.fullName || username}
+            username={username}
+            fullName={profile.fullName}
             email={profile.email}
             disabled={isSubmitting}
             onBack={() => setView('dashboard')}
