@@ -8,15 +8,18 @@ import backendApplication.example.backend.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthService authService;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, PasswordEncoder passwordEncoder) {
         this.authService = authService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/register")
@@ -45,5 +48,11 @@ public class AuthController {
         String token = authHeader.substring(7);
         authService.invalidateToken(token);
         return ResponseEntity.ok("Logged out");
+    }
+
+    @GetMapping("/hash")
+    public ResponseEntity<?> hash(@RequestParam("password") String password) {
+        String hashed = passwordEncoder.encode(password);
+        return ResponseEntity.ok(hashed);
     }
 }
